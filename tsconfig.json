@@ -1,0 +1,8 @@
+{
+  "extends": "./node_modules/@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "dist"
+  }
+}

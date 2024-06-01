@@ -1,0 +1,6 @@
+/fm-xml-export-exploder*
+/.env
+/node_modules
+/fmExploder
+/message.txt
+/dist

@@ -1,0 +1,39 @@
+{
+  "name": "@soliantconsulting/fm-saxml-delivery",
+  "version": "1.0.0",
+  "description": "Download a filemaker container file after running a script.",
+  "files": [
+    "dist/**/*"
+  ],
+  "bin": {
+    "fm-saxml-delivery": "./dist/cli.js"
+  },
+  "main": "index.js",
+  "type": "module",
+  "module": "es2022",
+  "scripts": {
+    "start": "tsx ./index.ts",
+    "build": "tsc"
+  },
+  "author": "Soliant Consulting",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/node": "^20.10.4",
+    "dotenv": "^16.3.1",
+    "tsx": "^4.7.3",
+    "typescript": "~5.4.0"
+  },
+  "dependencies": {
+    "@types/node-fetch": "^2.6.11",
+    "fm-data-api-client": "^1.4.0",
+    "form-data": "^4.0.0",
+    "into-stream": "^8.0.1"
+  },
+  "release": {
+    "branches": ["main"]
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
