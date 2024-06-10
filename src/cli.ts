@@ -58,6 +58,8 @@ for (const file of files) {
 
     const layout = client.layout('SaXMLDeliveryExecutionContext');
 
+    console.log('calling FM script');
+
     const executeScriptResult = await layout.executeScript('RunSaXMLDelivery');
 
     if (!executeScriptResult.scriptResult || executeScriptResult.scriptError !== '0') {
@@ -84,6 +86,8 @@ for (const file of files) {
         console.error(`${field} from script result.fieldName is not on layout`, Object.keys(records.data[0].fieldData));
         process.exit(20);
     }
+
+    console.log('Starting download of container field');
 
     const containerResponse = await client.requestContainer(containerUrl);
 
