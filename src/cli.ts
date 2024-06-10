@@ -24,7 +24,7 @@ type ScriptResult = {
     }
 }
 
-const log = (message: String) => {
+const log = (message: any) => {
     console.log(new Date().toLocaleTimeString(), message);
 }
 
@@ -70,6 +70,8 @@ for (const file of files) {
         process.exit(executeScriptResult.scriptError);
     }
     const scriptResult = JSON.parse(executeScriptResult.scriptResult) as ScriptResult;
+
+    log(scriptResult);
 
     if (scriptResult.errorCode !== 0) {
         console.error(scriptResult.message);
