@@ -24,8 +24,8 @@ type ScriptResult = {
     }
 }
 
-const log = (message: any) => {
-    console.log(new Date().toLocaleTimeString(), message);
+const log = (message: any, file: string) => {
+    console.log(file, new Date().toLocaleTimeString(), message);
 }
 
 const mkdir = async (path: string): Promise<void> => {
@@ -61,7 +61,7 @@ for (const file of files) {
 
     const layout = client.layout('SaXMLDeliveryExecutionContext');
 
-    log('calling FM script');
+    log('calling FM script', file);
 
     const executeScriptResult = await layout.executeScript('RunSaXMLDelivery');
 
@@ -71,7 +71,7 @@ for (const file of files) {
     }
     const scriptResult = JSON.parse(executeScriptResult.scriptResult) as ScriptResult;
 
-    log(scriptResult);
+    log(scriptResult, file);
 
     if (scriptResult.errorCode !== 0) {
         console.error(scriptResult.message);
@@ -92,7 +92,7 @@ for (const file of files) {
         process.exit(20);
     }
 
-    log('Starting download of container field');
+    log('Starting download of container field', file);
 
     const containerResponse = await client.requestContainer(containerUrl);
 
@@ -101,13 +101,13 @@ for (const file of files) {
         transcode(containerResponse.buffer, 'utf-16le', 'utf8')
     );
 
-    log('finished downloading container field');
+    log('finished downloading container field', file);
 
     const clearXml : Partial<FieldData> = {};
     clearXml[field] = '';
 
     await layout.update(Number(records.data[0].recordId), clearXml);
     await client.clearToken();
-    log('finished');
+    log('finished', file);
 }
 
