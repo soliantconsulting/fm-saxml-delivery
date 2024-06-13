@@ -63,7 +63,7 @@ for (const file of files) {
 
     log('calling FM script', file);
 
-    const executeScriptResult = await layout.executeScript('RunSaXMLDelivery');
+    const executeScriptResult = await layout.executeScript('saxmlDelivery_createXml');
 
     if (!executeScriptResult.scriptResult || executeScriptResult.scriptError !== '0') {
         console.error('bad script result', file, executeScriptResult);
