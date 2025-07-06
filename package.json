@@ -12,25 +12,28 @@
   "type": "module",
   "module": "es2022",
   "scripts": {
-    "start": "tsx ./index.ts",
+    "start": "tsx ./src/cli.ts",
     "build": "tsc"
   },
   "author": "Soliant Consulting",
   "license": "MIT",
   "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/node20": "^20.1.6",
     "@types/node": "^20.10.4",
     "tsx": "^4.7.3",
-    "typescript": "~5.4.0"
+    "typescript": "~5.8.3"
   },
   "dependencies": {
-    "fm-data-api-client": "^1.4.0",
-    "dotenv": "^16.3.1"
+    "fm-data-api-client": "^2.0.1",
+    "dotenv": "^17.0.1"
   },
   "release": {
     "branches": ["main"]
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+     "node": ">=20"
   }
 }

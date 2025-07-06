@@ -3,9 +3,12 @@
 import 'dotenv/config';
 import fs from 'node:fs/promises';
 import path from "node:path";
-import {transcode} from 'node:buffer';
 import {Client} from "fm-data-api-client";
 import type {FieldData} from "fm-data-api-client/dist/Layout.js";
+import {createWriteStream} from "node:fs";
+import {pipeline} from "node:stream/promises";
+import {Transform} from "stream";
+import {TextDecoder, TextEncoder} from "util";
 
 try {
     //if there's a .env file load it otherwise we don't need dotenv
@@ -96,9 +99,21 @@ for (const file of files) {
 
     const containerResponse = await client.requestContainer(containerUrl);
 
-    await fs.writeFile(
-        path.join('SaXML', `${file}.xml`),
-        transcode(containerResponse.buffer, 'utf-16le', 'utf8')
+    const convertEncoding = new Transform({
+        transform(chunk, _encoding, callback) {
+            try {
+                const decoded = new TextDecoder('utf-16le').decode(chunk);
+                callback(null,  new TextEncoder().encode(decoded));
+            } catch (err) {
+                callback(err as Error);
+            }
+        }
+    });
+
+    await pipeline(
+        containerResponse.buffer.stream(),
+        convertEncoding,
+        createWriteStream(path.join('SaXML', `${file}.xml`)),
     );
 
     log('finished downloading container field', file);
@@ -110,4 +125,3 @@ for (const file of files) {
     await client.clearToken();
     log('finished', file);
 }
-
