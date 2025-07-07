@@ -24,16 +24,19 @@
     "typescript": "~5.8.3"
   },
   "dependencies": {
+    "dotenv": "^17.0.1",
     "fm-data-api-client": "^2.0.1",
-    "dotenv": "^17.0.1"
+    "libxslt-next": "^1.0.9"
   },
   "release": {
-    "branches": ["main"]
+    "branches": [
+      "main"
+    ]
   },
   "publishConfig": {
     "access": "public"
   },
   "engines": {
-     "node": ">=20"
+    "node": ">=20"
   }
 }
