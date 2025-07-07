@@ -9,7 +9,7 @@ import { createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { Transform } from "stream";
 import { TextDecoder, TextEncoder } from "util";
-import { createIdNameMaps } from "./id-name-map.js";
+import { applyTransformation, applyTransformationSaveToFile } from "./transformations.js";
 import { fileURLToPath } from 'node:url';
 
 try {
@@ -46,13 +46,13 @@ const mkdir = async (path: string): Promise<void> => {
 
 await mkdir('SaXML');
 await mkdir('XMLSplit');
-await mkdir('id-name-maps');
+await mkdir('artifacts');
 
 const files = (process.env.FM_FILES ?? '').split(',');
 
-// Define single output files for all data
-const tableMapFile = join('id-name-maps', 'table-map.csv');
-const fieldMapFile = join('id-name-maps', 'field-map.csv');
+const tableMapFile = join('artifacts', 'table-map.csv');
+const fieldMapFile = join('artifacts', 'field-map.csv');
+const modificationsFile = join('artifacts', 'modifications.csv');
 
 for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     if (!process.env[env]) {
@@ -148,8 +148,13 @@ for (let i = 0; i < files.length; i++) {
 
     const __filename = fileURLToPath(import.meta.url);    
     const __dirname = dirname(dirname(__filename));
-    await createIdNameMaps(saxmlFile, join(__dirname, 'stylesheets', `field-map.xsl`), fieldMapFile, isFirstFile);
-    await createIdNameMaps(saxmlFile, join(__dirname, 'stylesheets', `table-map.xsl`), tableMapFile, isFirstFile);
+    await applyTransformationSaveToFile(saxmlFile, join(__dirname, 'stylesheets', `field-map.xsl`), fieldMapFile, isFirstFile);
+    await applyTransformationSaveToFile(saxmlFile, join(__dirname, 'stylesheets', `table-map.xsl`), tableMapFile, isFirstFile);
+    const saxmlVersion = await applyTransformation(saxmlFile, join(__dirname, 'stylesheets', `saxml-version.xsl`));
+    if (saxmlVersion !== '2.2.3.0') {
+        log(`⚠️  Warning: ${file} uses SaXML version ${saxmlVersion}. Only v2.2.3.0 is fully supported. Results might not be correct.`, file);
+    }
+    await applyTransformationSaveToFile(saxmlFile, join(__dirname, 'stylesheets', `modifications.xsl`), modificationsFile, isFirstFile);
 
     log('finished', file);
 }
