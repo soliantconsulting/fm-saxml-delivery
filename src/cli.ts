@@ -2,7 +2,7 @@
 
 import 'dotenv/config';
 import fs from 'node:fs/promises';
-import path from "node:path";
+import { dirname, join } from "node:path";
 import { Client } from "fm-data-api-client";
 import type { FieldData } from "fm-data-api-client/dist/Layout.js";
 import { createWriteStream } from "node:fs";
@@ -10,6 +10,7 @@ import { pipeline } from "node:stream/promises";
 import { Transform } from "stream";
 import { TextDecoder, TextEncoder } from "util";
 import { createIdNameMaps } from "./id-name-map.js";
+import { fileURLToPath } from 'node:url';
 
 try {
     //if there's a .env file load it otherwise we don't need dotenv
@@ -50,8 +51,8 @@ await mkdir('id-name-maps');
 const files = (process.env.FM_FILES ?? '').split(',');
 
 // Define single output files for all data
-const tableMapFile = path.join('id-name-maps', 'table-map.csv');
-const fieldMapFile = path.join('id-name-maps', 'field-map.csv');
+const tableMapFile = join('id-name-maps', 'table-map.csv');
+const fieldMapFile = join('id-name-maps', 'field-map.csv');
 
 for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     if (!process.env[env]) {
@@ -130,7 +131,7 @@ for (let i = 0; i < files.length; i++) {
         }
     });
 
-    const saxmlFile = path.join('SaXML', `${file}.xml`);
+    const saxmlFile = join('SaXML', `${file}.xml`);
     await pipeline(
         containerResponse.buffer.stream(),
         convertEncoding,
@@ -145,8 +146,10 @@ for (let i = 0; i < files.length; i++) {
     await layout.update(Number(records.data[0].recordId), clearXml);
     await client.clearToken();
 
-    await createIdNameMaps(saxmlFile, path.join('stylesheets', `field-map.xsl`), fieldMapFile, isFirstFile);
-    await createIdNameMaps(saxmlFile, path.join('stylesheets', `table-map.xsl`), tableMapFile, isFirstFile);
+    const __filename = fileURLToPath(import.meta.url);    
+    const __dirname = dirname(dirname(__filename));
+    await createIdNameMaps(saxmlFile, join(__dirname, 'stylesheets', `field-map.xsl`), fieldMapFile, isFirstFile);
+    await createIdNameMaps(saxmlFile, join(__dirname, 'stylesheets', `table-map.xsl`), tableMapFile, isFirstFile);
 
     log('finished', file);
 }
