@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Download a filemaker container file after running a script.",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "stylesheets/**/*"
   ],
   "bin": {
     "fm-saxml-delivery": "./dist/cli.js"
