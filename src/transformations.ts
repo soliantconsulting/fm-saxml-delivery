@@ -1,11 +1,15 @@
 import * as libxslt from 'libxslt-next';
 import fs from 'node:fs/promises';
 
-export const createIdNameMaps = async (inputFile: string, stylesheetFile: string, outputFile: string, isFirstFile: boolean = false) => {
+export const applyTransformation = async (inputFile: string, stylesheetFile: string): Promise<string> => {
     const stylesheetString = await fs.readFile(stylesheetFile, 'utf8');
     const stylesheet = libxslt.parse(stylesheetString);
     const saxmlString = await fs.readFile(inputFile, 'utf8');
-    const result = stylesheet.apply(saxmlString);
+    return stylesheet.apply(saxmlString);
+}
+
+export const applyTransformationSaveToFile = async (inputFile: string, stylesheetFile: string, outputFile: string, isFirstFile: boolean = false) => {
+    const result = await applyTransformation(inputFile, stylesheetFile);
     
     if (isFirstFile) {
         // For the first file, write the entire result (including header)
