@@ -62,6 +62,25 @@ for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     }
 }
 
+const downloadFile = async (saxmlFile: string, containerUrl: string, client: Client) => {
+    const containerResponse = await client.requestContainer(containerUrl);
+
+    const convertEncoding = new Transform({
+        transform(chunk, _encoding, callback) {
+            try {
+                callback(null, new TextEncoder().encode(chunk));
+            } catch (err) {
+                callback(err as Error);
+            }
+        },
+    });
+
+    const containerReadable = Readable.fromWeb(containerResponse.buffer.stream(), {
+        encoding: 'utf-16le',
+    });
+    await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));
+};
+
 for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const isFirstFile = i === 0;
@@ -111,23 +130,8 @@ for (let i = 0; i < files.length; i++) {
 
     log('Starting download of container field', file);
 
-    const containerResponse = await client.requestContainer(containerUrl);
-
-    const convertEncoding = new Transform({
-        transform(chunk, _encoding, callback) {
-            try {
-                callback(null, new TextEncoder().encode(chunk));
-            } catch (err) {
-                callback(err as Error);
-            }
-        },
-    });
-
     const saxmlFile = join('SaXML', `${file}.xml`);
-    const containerReadable = Readable.fromWeb(containerResponse.buffer.stream(), {
-        encoding: 'utf-16le',
-    });
-    await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));
+    await downloadFile(saxmlFile, containerUrl, client);
 
     log('finished downloading container field', file);
 
