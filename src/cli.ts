@@ -10,7 +10,6 @@ import {fileURLToPath} from 'node:url';
 import {TextEncoder} from 'node:util';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
-import {applyTransformation, applyTransformationSaveToFile} from './transformations.js';
 
 try {
     //if there's a .env file load it otherwise we don't need dotenv
@@ -47,13 +46,8 @@ const mkdir = async (path: string): Promise<void> => {
 
 await mkdir('SaXML');
 await mkdir('XMLSplit');
-await mkdir('artifacts');
 
 const files = (process.env.FM_FILES ?? '').split(',');
-
-const tableMapFile = join('artifacts', 'table-map.csv');
-const fieldMapFile = join('artifacts', 'field-map.csv');
-const modificationsFile = join('artifacts', 'modifications.csv');
 
 for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     if (!process.env[env]) {
@@ -140,38 +134,6 @@ for (let i = 0; i < files.length; i++) {
 
     await layout.update(Number(records.data[0].recordId), clearXml);
     await client.clearToken();
-
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(dirname(__filename));
-    log('running XSLT transformations', file);
-    await applyTransformationSaveToFile(
-        saxmlFile,
-        join(__dirname, 'stylesheets', `field-map.xsl`),
-        fieldMapFile,
-        isFirstFile,
-    );
-    await applyTransformationSaveToFile(
-        saxmlFile,
-        join(__dirname, 'stylesheets', `table-map.xsl`),
-        tableMapFile,
-        isFirstFile,
-    );
-    const saxmlVersion = await applyTransformation(
-        saxmlFile,
-        join(__dirname, 'stylesheets', `saxml-version.xsl`),
-    );
-    if (saxmlVersion !== '2.2.3.0') {
-        log(
-            `⚠️  Warning: ${file} uses SaXML version ${saxmlVersion}. Only v2.2.3.0 is fully supported. Results might not be correct.`,
-            file,
-        );
-    }
-    await applyTransformationSaveToFile(
-        saxmlFile,
-        join(__dirname, 'stylesheets', `modifications.xsl`),
-        modificationsFile,
-        isFirstFile,
-    );
 
     log('finished', file);
 }
