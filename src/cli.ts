@@ -94,7 +94,7 @@ for (let i = 0; i < files.length; i++) {
 
     if (!executeScriptResult.scriptResult || executeScriptResult.scriptError !== '0') {
         console.error('bad script result', file, executeScriptResult);
-        process.exit(executeScriptResult.scriptError);
+        process.exit(executeScriptResult.scriptError !== '0' ? executeScriptResult.scriptError : 1);
     }
     const scriptResult = JSON.parse(executeScriptResult.scriptResult) as ScriptResult;
 
