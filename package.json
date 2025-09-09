@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "dotenv": "^17.0.1",
-        "fm-data-api-client": "^2.0.1"
+        "fm-data-api-client": "^2.0.3"
     },
     "release": {
         "branches": [
