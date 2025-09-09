@@ -3,10 +3,9 @@
 import 'dotenv/config';
 import {createWriteStream} from 'node:fs';
 import fs from 'node:fs/promises';
-import {dirname, join} from 'node:path';
+import {join} from 'node:path';
 import {Readable, Transform} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
-import {fileURLToPath} from 'node:url';
 import {TextEncoder} from 'node:util';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
@@ -125,8 +124,13 @@ for (let i = 0; i < files.length; i++) {
     log('Starting download of container field', file);
 
     const saxmlFile = join('SaXML', `${file}.xml`);
-    await downloadFile(saxmlFile, containerUrl, client);
-
+    try {
+        await downloadFile(saxmlFile, containerUrl, client);
+    } catch (e) {
+        console.error(e);
+        console.error('failed to download container field', containerUrl);
+        process.exit(10);
+    }
     log('finished downloading container field', file);
 
     const clearXml: Partial<FieldData> = {};
