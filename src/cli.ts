@@ -55,8 +55,16 @@ for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     }
 }
 
+const formatBytes = () => {
+    const memoryUsage = process.memoryUsage();
+    return `${(memoryUsage.external/1024/1024).toFixed(2)}MB ${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`;
+};
+
 const downloadFile = async (saxmlFile: string, containerUrl: string, client: Client) => {
     const containerResponse = await client.requestContainer(containerUrl);
+    if (!containerResponse.buffer) {
+        throw new Error('Could not download container');
+    }
 
     const convertEncoding = new Transform({
         transform(chunk, _encoding, callback) {
@@ -68,7 +76,7 @@ const downloadFile = async (saxmlFile: string, containerUrl: string, client: Cli
         },
     });
 
-    const containerReadable = Readable.fromWeb(containerResponse.buffer.stream(), {
+    const containerReadable = Readable.fromWeb(containerResponse.buffer, {
         encoding: 'utf-16le',
     });
     await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));

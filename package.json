@@ -24,11 +24,11 @@
         "@tsconfig/node20": "^20.1.6",
         "@types/node": "^20.10.4",
         "tsx": "^4.7.3",
-        "typescript": "~5.8.3"
+        "typescript": "~5.9.2"
     },
     "dependencies": {
         "dotenv": "^17.0.1",
-        "fm-data-api-client": "^2.0.5"
+        "fm-data-api-client": "^3.0.0"
     },
     "release": {
         "branches": [
