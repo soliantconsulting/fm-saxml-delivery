@@ -9,6 +9,7 @@ import {pipeline} from 'node:stream/promises';
 import {TextEncoder} from 'node:util';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
+import packageJson from '../package.json' with { type: 'json' };
 
 try {
     //if there's a .env file load it otherwise we don't need dotenv
@@ -17,6 +18,12 @@ try {
     dotenv.config();
 } catch (_e) {
     // don't load dotenv if it's not there
+}
+
+// Check for --version flag
+if (process.argv.includes('--version')) {
+    console.log(`fm-saxml-delivery ${packageJson.version}`);
+    process.exit(0);
 }
 
 type ScriptResult = {
@@ -76,7 +83,7 @@ const downloadFile = async (saxmlFile: string, containerUrl: string, client: Cli
         },
     });
 
-    const containerReadable = Readable.fromWeb(containerResponse.buffer, {
+    const containerReadable = Readable.fromWeb(containerResponse.buffer.stream(), {
         encoding: 'utf-16le',
     });
     await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));
