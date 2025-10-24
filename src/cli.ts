@@ -83,7 +83,7 @@ const downloadFile = async (saxmlFile: string, containerUrl: string, client: Cli
         },
     });
 
-    const containerReadable = Readable.fromWeb(containerResponse.buffer.stream(), {
+    const containerReadable = Readable.fromWeb(containerResponse.buffer, {
         encoding: 'utf-16le',
     });
     await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));
