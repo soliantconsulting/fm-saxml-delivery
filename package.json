@@ -1,6 +1,6 @@
 {
     "name": "@soliantconsulting/fm-saxml-delivery",
-    "version": "1.11.0",
+    "version": "0.0.0-managed-by-semantic-release",
     "description": "Download a filemaker container file after running a script.",
     "files": [
         "dist/**/*"
