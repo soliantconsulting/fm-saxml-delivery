@@ -3,6 +3,8 @@
     "compilerOptions": {
         "noImplicitAny": true,
         "sourceMap": true,
-        "outDir": "dist"
-    }
+        "outDir": "dist",
+        "rootDir": "src"
+    },
+    "include": ["src"]
 }
