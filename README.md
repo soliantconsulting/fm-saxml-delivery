@@ -8,4 +8,6 @@ you must setup the following environment variables
 * FM_PASSWORD=password
 * FM_FILES=file,anotherFile,yetAnotherFile
 
+The container is decoded from UTF-16LE or UTF-8 (with or without a BOM) and written as UTF-8. The tool exits nonzero if a downloaded file is empty or does not start with an `<FMSaveAsXML` element.
+
 ```pnpm dlx @soliantconsulting/fm-saxml-delivery```

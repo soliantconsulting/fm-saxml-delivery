@@ -14,21 +14,22 @@
     "scripts": {
         "start": "tsx ./src/cli.ts",
         "build": "tsc",
+        "test": "tsx --test test/*.test.ts",
         "format": "biome format . --write",
         "check": "biome check . --write"
     },
     "author": "Soliant Consulting",
     "license": "MIT",
     "devDependencies": {
-        "@biomejs/biome": "^2.1.1",
-        "@tsconfig/node22": "^22.0.5",
-        "@types/node": "^22.19.21",
-        "tsx": "^4.22.4",
-        "typescript": "~5.9.2"
+        "@biomejs/biome": "^2.5.15",
+        "@tsconfig/node22": "^22.0.6",
+        "@types/node": "^22.20.5",
+        "tsx": "^4.23.15",
+        "typescript": "~5.9.3"
     },
     "dependencies": {
-        "dotenv": "^17.0.1",
-        "fm-data-api-client": "^3.0.0"
+        "dotenv": "^17.4.2",
+        "fm-data-api-client": "^3.0.2"
     },
     "release": {
         "branches": [
@@ -39,7 +40,7 @@
         "access": "public"
     },
     "engines": {
-        "node": ">=20"
+        "node": ">=22"
     },
     "repository": {
         "type": "git",
