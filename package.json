@@ -22,14 +22,14 @@
     "license": "MIT",
     "devDependencies": {
         "@biomejs/biome": "^2.5.15",
-        "@tsconfig/node20": "^20.1.10",
-        "@types/node": "^20.19.43",
+        "@tsconfig/node22": "^22.0.6",
+        "@types/node": "^22.20.5",
         "tsx": "^4.23.15",
         "typescript": "~5.9.3"
     },
     "dependencies": {
         "dotenv": "^17.4.2",
-        "fm-data-api-client": "^3.0.1"
+        "fm-data-api-client": "^3.0.2"
     },
     "release": {
         "branches": [
@@ -40,7 +40,7 @@
         "access": "public"
     },
     "engines": {
-        "node": ">=20"
+        "node": ">=22"
     },
     "packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67"
 }
