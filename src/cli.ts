@@ -4,12 +4,12 @@ import 'dotenv/config';
 import {createWriteStream} from 'node:fs';
 import fs from 'node:fs/promises';
 import {join} from 'node:path';
-import {Readable, Transform} from 'node:stream';
+import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
-import {TextEncoder} from 'node:util';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
 import packageJson from '../package.json' with { type: 'json' };
+import {assertSaxmlFile, saxmlToUtf8} from './saxml.js';
 
 try {
     //if there's a .env file load it otherwise we don't need dotenv
@@ -73,20 +73,12 @@ const downloadFile = async (saxmlFile: string, containerUrl: string, client: Cli
         throw new Error('Could not download container');
     }
 
-    const convertEncoding = new Transform({
-        transform(chunk, _encoding, callback) {
-            try {
-                callback(null, new TextEncoder().encode(chunk));
-            } catch (err) {
-                callback(err as Error);
-            }
-        },
-    });
-
-    const containerReadable = Readable.fromWeb(containerResponse.buffer, {
-        encoding: 'utf-16le',
-    });
-    await pipeline(containerReadable, convertEncoding, createWriteStream(saxmlFile));
+    await pipeline(
+        Readable.fromWeb(containerResponse.buffer),
+        saxmlToUtf8(),
+        createWriteStream(saxmlFile),
+    );
+    await assertSaxmlFile(saxmlFile);
 };
 
 for (let i = 0; i < files.length; i++) {
@@ -143,7 +135,7 @@ for (let i = 0; i < files.length; i++) {
         await downloadFile(saxmlFile, containerUrl, client);
     } catch (e) {
         console.error(e);
-        console.error('failed to download container field', containerUrl);
+        console.error('failed to download or validate container field', containerUrl);
         process.exit(10);
     }
     log('finished downloading container field', file);
