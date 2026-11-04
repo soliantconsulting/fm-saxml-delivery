@@ -9,6 +9,7 @@ import {pipeline} from 'node:stream/promises';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
 import packageJson from '../package.json' with { type: 'json' };
+import {type JobState, pollJob} from './poll.js';
 import {assertSaxmlFile, saxmlToUtf8} from './saxml.js';
 
 try {
@@ -32,6 +33,7 @@ type ScriptResult = {
     data?: {
         recordId: string;
         xmlFieldName: string;
+        jobStatus?: string;
     };
 };
 
@@ -120,7 +122,31 @@ for (let i = 0; i < files.length; i++) {
         process.exit(10);
     }
 
-    const records = await layout.get(Number(scriptResult.data.recordId));
+    const recordId = Number(scriptResult.data.recordId);
+
+    // Newer add-ons return at once with jobStatus "running"; older ones have the XML ready already.
+    if (scriptResult.data.jobStatus === 'running') {
+        const pollMs = Number(process.env.FM_POLL_INTERVAL_SECONDS ?? 10) * 1000;
+        const timeoutMs = Number(process.env.FM_POLL_TIMEOUT_MINUTES ?? 20) * 60_000;
+        log('waiting for background export', file);
+        try {
+            const done = await pollJob({
+                fetchStatus: async () => (await layout.get(recordId)).data[0].fieldData as JobState,
+                sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+                now: Date.now,
+                intervalMs: pollMs,
+                timeoutMs,
+                onProgress: (elapsed) =>
+                    log(`still exporting after ${Math.round(elapsed / 60_000)} min`, file),
+            });
+            log(`export done: timeToCreate=${done.timeToCreate ?? 'n/a'} timeToUpload=${done.timeToUpload ?? 'n/a'}`, file);
+        } catch (e) {
+            console.error(e instanceof Error ? e.message : e);
+            process.exit(30);
+        }
+    }
+
+    const records = await layout.get(recordId);
 
     const field = scriptResult.data.xmlFieldName.split('::').splice(-1)[0];
     const containerUrl = records.data[0].fieldData[field];
