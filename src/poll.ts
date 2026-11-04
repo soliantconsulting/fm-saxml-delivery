@@ -16,6 +16,8 @@ export type PollOptions = {
     onProgress?: (elapsedMs: number) => void;
 };
 
+export class PollTimeoutError extends Error {}
+
 /** Polls until jobStatus is "done" and returns the final state; throws on "error", timeout, or repeated request failures. */
 export const pollJob = async ({
     fetchStatus,
@@ -52,7 +54,7 @@ export const pollJob = async ({
 
         const elapsed = now() - start;
         if (elapsed >= timeoutMs) {
-            throw new Error(`Export did not finish within ${Math.round(timeoutMs / 60_000)} minutes`);
+            throw new PollTimeoutError(`Export did not finish within ${Math.round(timeoutMs / 60_000)} minutes`);
         }
         if (now() - lastProgress >= progressMs) {
             lastProgress = now();

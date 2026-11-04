@@ -9,7 +9,7 @@ import {pipeline} from 'node:stream/promises';
 import {Client} from 'fm-data-api-client';
 import type {FieldData} from 'fm-data-api-client/dist/Layout.js';
 import packageJson from '../package.json' with { type: 'json' };
-import {type JobState, pollJob} from './poll.js';
+import {type JobState, PollTimeoutError, pollJob} from './poll.js';
 import {assertSaxmlFile, saxmlToUtf8} from './saxml.js';
 
 try {
@@ -142,6 +142,11 @@ for (let i = 0; i < files.length; i++) {
             log(`export done: timeToCreate=${done.timeToCreate ?? 'n/a'} timeToUpload=${done.timeToUpload ?? 'n/a'}`, file);
         } catch (e) {
             console.error(e instanceof Error ? e.message : e);
+            if (e instanceof PollTimeoutError) {
+                console.error(
+                    `Record ${recordId} (created ${(await layout.get(recordId).then((r) => r.data[0].fieldData.createTimestamp).catch(() => 'unknown'))}, server time): the server job may still be running or may have died.`,
+                );
+            }
             process.exit(30);
         }
     }
