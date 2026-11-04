@@ -127,7 +127,7 @@ for (let i = 0; i < files.length; i++) {
     // Newer add-ons return at once with jobStatus "running"; older ones have the XML ready already.
     if (scriptResult.data.jobStatus === 'running') {
         const pollMs = Number(process.env.FM_POLL_INTERVAL_SECONDS ?? 10) * 1000;
-        const timeoutMs = Number(process.env.FM_POLL_TIMEOUT_MINUTES ?? 20) * 60_000;
+        const timeoutMs = Number(process.env.FM_POLL_TIMEOUT_MINUTES ?? 60) * 60_000;
         log('waiting for background export', file);
         try {
             const done = await pollJob({

@@ -11,7 +11,7 @@ you must setup the following environment variables
 Optional:
 * FM_INCLUDE_DDR_INFO=true includes the `DDR_INFO` section (resolved references inside calculations and script step text, FileMaker's "Include details for analysis tools"). It is left out by default because it makes exports larger and, on large files, much slower. Requires FileMaker 21.1 or later and a current add-on script; otherwise the setting is ignored.
 * FM_POLL_INTERVAL_SECONDS=10 sets how often to check whether a background export has finished. Only used with an add-on that returns immediately; older add-ons are not polled.
-* FM_POLL_TIMEOUT_MINUTES=20 sets how long to wait for a background export before exiting nonzero.
+* FM_POLL_TIMEOUT_MINUTES=60 sets how long to wait for a background export before exiting nonzero.
 
 The container is decoded from UTF-16LE or UTF-8 (with or without a BOM) and written as UTF-8. The tool exits nonzero if a downloaded file is empty or does not start with an `<FMSaveAsXML` element.
 
