@@ -8,6 +8,9 @@ you must setup the following environment variables
 * FM_PASSWORD=password
 * FM_FILES=file,anotherFile,yetAnotherFile
 
+Optional:
+* FM_INCLUDE_DDR_INFO=true includes the `DDR_INFO` section (resolved references inside calculations and script step text, FileMaker's "Include details for analysis tools"). It is left out by default because it makes exports larger and, on large files, much slower. Requires FileMaker 21.1 or later and a current add-on script; otherwise the setting is ignored.
+
 The container is decoded from UTF-16LE or UTF-8 (with or without a BOM) and written as UTF-8. The tool exits nonzero if a downloaded file is empty or does not start with an `<FMSaveAsXML` element.
 
 ```pnpm dlx @soliantconsulting/fm-saxml-delivery```

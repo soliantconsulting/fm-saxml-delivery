@@ -54,6 +54,7 @@ await mkdir('SaXML');
 await mkdir('XMLSplit');
 
 const files = (process.env.FM_FILES ?? '').split(',');
+const includeDdrInfo = process.env.FM_INCLUDE_DDR_INFO === 'true';
 
 for (const env of ['FM_FILES', 'FM_USERNAME', 'FM_PASSWORD', 'FM_HOST']) {
     if (!process.env[env]) {
@@ -96,7 +97,10 @@ for (let i = 0; i < files.length; i++) {
 
     log('calling FM script', file);
 
-    const executeScriptResult = await layout.executeScript('saxmlDelivery_createXml');
+    const executeScriptResult = await layout.executeScript(
+        'saxmlDelivery_createXml',
+        JSON.stringify({includeDetailsForAnalysisTools: includeDdrInfo}),
+    );
 
     if (!executeScriptResult.scriptResult || executeScriptResult.scriptError !== '0') {
         console.error('bad script result', file, executeScriptResult);
