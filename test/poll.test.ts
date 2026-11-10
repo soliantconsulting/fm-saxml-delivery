@@ -52,3 +52,14 @@ test('persistent failures give up', async () => {
     const s = setup([new Error('boom')]);
     await assert.rejects(s.run(), /failed 5 times in a row/);
 });
+
+test('unreadable status fails at once and names the fields', async () => {
+    const s = setup([{jobStatus: 'running'}, {jobStatus: '<No Access>', jobMessage: '<No Access>'}]);
+    await assert.rejects(s.run(), /view access to SaXMLDelivery::jobStatus and SaXMLDelivery::jobMessage/);
+    assert.equal(s.calls(), 2);
+});
+
+test('unknown status fails at once', async () => {
+    const s = setup([{jobStatus: ''}]);
+    await assert.rejects(s.run(), /Unexpected export status: ""/);
+});

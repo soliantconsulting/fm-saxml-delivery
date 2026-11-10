@@ -18,7 +18,7 @@ export type PollOptions = {
 
 export class PollTimeoutError extends Error {}
 
-/** Polls until jobStatus is "done" and returns the final state; throws on "error", timeout, or repeated request failures. */
+/** Polls until jobStatus is "done" and returns the final state; throws on "error", any other status than "running", timeout, or repeated request failures. */
 export const pollJob = async ({
     fetchStatus,
     sleep,
@@ -50,6 +50,14 @@ export const pollJob = async ({
         }
         if (state?.jobStatus === 'error') {
             throw new Error(`Export failed: ${state.jobMessage ?? '(no message)'}`);
+        }
+        if (state?.jobStatus === '<No Access>') {
+            throw new Error(
+                'Cannot read the export status (jobStatus is "<No Access>"): the Data API account needs view access to SaXMLDelivery::jobStatus and SaXMLDelivery::jobMessage',
+            );
+        }
+        if (state && state.jobStatus !== 'running') {
+            throw new Error(`Unexpected export status: ${JSON.stringify(state.jobStatus)}`);
         }
 
         const elapsed = now() - start;

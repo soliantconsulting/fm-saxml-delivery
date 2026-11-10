@@ -141,7 +141,7 @@ for (let i = 0; i < files.length; i++) {
             });
             log(`export done: timeToCreate=${done.timeToCreate ?? 'n/a'} timeToUpload=${done.timeToUpload ?? 'n/a'}`, file);
         } catch (e) {
-            console.error(e instanceof Error ? e.message : e);
+            console.error(file, e instanceof Error ? e.message : e);
             if (e instanceof PollTimeoutError) {
                 console.error(
                     `Record ${recordId} (created ${(await layout.get(recordId).then((r) => r.data[0].fieldData.createTimestamp).catch(() => 'unknown'))}, server time): the server job may still be running or may have died.`,
